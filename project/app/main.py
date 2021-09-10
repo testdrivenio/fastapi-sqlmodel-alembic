@@ -1,5 +1,5 @@
 from fastapi import Depends, FastAPI
-from sqlalchemy import select
+from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_session
@@ -25,4 +25,5 @@ async def add_song(song: SongCreate, session: AsyncSession = Depends(get_session
     song = Song(name=song.name, artist=song.artist, year=song.year)
     session.add(song)
     await session.commit()
+    await session.refresh(song)
     return song
