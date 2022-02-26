@@ -9,10 +9,8 @@ from alembic import context
 from app.models import Song # All models that needs to be migrated should be added
 from app.settings import Settings
 
-print('settings.ASYNC_DATABASE_URIaa')
 
 settings = Settings()
-print('settings.ASYNC_DATABASE_URI', settings.ASYNC_DATABASE_URI)
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
