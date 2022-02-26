@@ -10,7 +10,11 @@ services:
     ports:
       - 8004:8000
     environment:
-      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/foo
+      - DATABASE_HOST=db
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_NAME=foo
+      - DATABASE_PORT=5432
     depends_on:
       - db
 
