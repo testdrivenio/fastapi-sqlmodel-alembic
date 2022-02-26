@@ -5,7 +5,6 @@ from app.settings import Settings
 
 settings = Settings()
 
-print('settings.ASYNC_DATABASE_URI', settings.ASYNC_DATABASE_URI)
 engine = AsyncEngine(create_engine(settings.ASYNC_DATABASE_URI, echo=True, future=True))
 
 async def init_db():
