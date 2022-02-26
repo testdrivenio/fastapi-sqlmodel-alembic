@@ -13,6 +13,13 @@ $ docker-compose up -d --build
 $ docker-compose exec web alembic upgrade head
 ```
 
+## Want to make a migration?
+
+```sh
+$ docker-compose exec web alembic revision --autogenerate
+$ docker-compose exec web alembic upgrade head
+```
+
 Sanity check: [http://localhost:8004/ping](http://localhost:8004/ping)
 
 Add a song:
