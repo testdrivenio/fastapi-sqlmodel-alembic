@@ -20,6 +20,11 @@ $ docker-compose exec web alembic revision --autogenerate
 $ docker-compose exec web alembic upgrade head
 ```
 
+### Init database
+```
+docker-compose exec web python app/initial_data.py
+```
+
 Sanity check: [http://localhost:8004/ping](http://localhost:8004/ping)
 
 Add a song:

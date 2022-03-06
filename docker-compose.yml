@@ -1,23 +1,28 @@
 version: '3.8'
 
 services:
-
   web:
     build: ./project
-    command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
+    command: "sh -c 'alembic upgrade head && uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000'"
     volumes:
-      - ./project:/usr/src/app
+      - ./project:/code
     ports:
-      - 8004:8000
+      - 8000:8000
     environment:
       - DATABASE_HOST=db
       - DATABASE_USER=postgres
       - DATABASE_PASSWORD=postgres
       - DATABASE_NAME=foo
       - DATABASE_PORT=5432
+      - FIRST_SUPERUSER_PASSWORD=admin
+      - FIRST_SUPERUSER_EMAIL=admin@admin.com
+      - ENCRYPT_KEY=TshgGacKPYrm35m9UUqbRg46JAbUm2yRtxOCQFdqa3w=
+      - SECRET_KEY=09d25e0sas4faa6ca2gf6c818166b7a9563b93f7sdsdef6f0f4caa6cf63b88e8d3e7
+      - PROJECT_NAME=fastapi-sqlmodel-alembic
+      - BACKEND_CORS_ORIGINS=["*"] 
     depends_on:
       - db
-
+  
   db:
     image: postgres:13.4
     expose:

@@ -1,5 +1,5 @@
 from typing import Optional
-
+from datetime import datetime
 from sqlmodel import SQLModel, Field
 
 
@@ -11,7 +11,5 @@ class SongBase(SQLModel):
 
 class Song(SongBase, table=True):
     id: int = Field(default=None, nullable=False, primary_key=True)
-
-
-class SongCreate(SongBase):
-    pass
+    updated_at: Optional[datetime]
+    created_at: Optional[datetime]

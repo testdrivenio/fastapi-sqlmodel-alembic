@@ -1,29 +1,31 @@
-from fastapi import Depends, FastAPI
-from sqlmodel import select
-from sqlmodel.ext.asyncio.session import AsyncSession
+from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
+from app.api.api_v1.api import api_router
+from app.core.config import settings
 
-from app.db import get_session
-from app.models import Song, SongCreate
+#from app.models.song import Song, SongCreate
 
-app = FastAPI()
+app = FastAPI(
+    title=settings.PROJECT_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json"
+)
 
+# Set all CORS enabled origins
+if settings.BACKEND_CORS_ORIGINS:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
-@app.get("/ping")
-async def pong():
-    return {"ping": "pong!"}
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
 
+@app.on_event("startup")
+async def on_startup():
+    print('startup fastapi')
 
-@app.get("/songs", response_model=list[Song])
-async def get_songs(session: AsyncSession = Depends(get_session)):
-    result = await session.execute(select(Song))
-    songs = result.scalars().all()
-    return [Song(name=song.name, artist=song.artist, year=song.year, id=song.id) for song in songs]
+app.include_router(api_router, prefix=settings.API_V1_STR)
 
-
-@app.post("/songs")
-async def add_song(song: SongCreate, session: AsyncSession = Depends(get_session)):
-    song = Song(name=song.name, artist=song.artist, year=song.year)
-    session.add(song)
-    await session.commit()
-    await session.refresh(song)
-    return song
