@@ -1,15 +1,16 @@
 import asyncio
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-from sqlalchemy.ext.asyncio import AsyncEngine
-from sqlmodel import SQLModel
+from sqlmodel import SQLModel, create_engine
+from sqlmodel.ext.asyncio.session import AsyncEngine
 
 from alembic import context
 
-from app.models import Song
+from app.models import Song # All models that needs to be migrated should be added
+from app.settings import Settings
 
+
+settings = Settings()
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -41,8 +42,8 @@ def run_migrations_offline():
     Calls to context.execute() here emit the given string to the
     script output.
 
-    """
-    url = config.get_main_option("sqlalchemy.url")
+    """    
+    url = settings.ASYNC_DATABASE_URI
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -68,14 +69,7 @@ async def run_migrations_online():
     and associate a connection with the context.
 
     """
-    connectable = AsyncEngine(
-        engine_from_config(
-            config.get_section(config.config_ini_section),
-            prefix="sqlalchemy.",
-            poolclass=pool.NullPool,
-            future=True,
-        )
-    )
+    connectable = AsyncEngine(create_engine(settings.ASYNC_DATABASE_URI, echo=True, future=True))
 
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)
