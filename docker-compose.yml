@@ -16,8 +16,14 @@ services:
 
   db:
     image: postgres:13.4
-    expose:
-      - 5432
+    ports:
+      - "6543:5432"
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
