@@ -9,7 +9,7 @@ app = FastAPI()
 
 app.include_router(product_router, prefix="/product")
 
+
 @app.get("/ping")
 async def pong():
     return {"ping": "pong!"}
-
