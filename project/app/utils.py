@@ -12,7 +12,7 @@ class AbstractRepository(abc.ABC):
     def get(self, reference: int) -> dict:
         raise NotImplementedError
 
-    """
+
     @abc.abstractmethod  # (1)
     def modify(self, batch: dict) -> dict:
         raise NotImplementedError  # (2)
@@ -21,4 +21,3 @@ class AbstractRepository(abc.ABC):
     def delete(self, reference: int) -> dict:
         raise NotImplementedError
         
-    """

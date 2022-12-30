@@ -13,7 +13,7 @@ product_router = APIRouter()
 @product_router.get("/", response_model=list[Product], status_code=http_status.HTTP_200_OK)
 async def list_products(session: AsyncSession = Depends(get_session)):
     crud_instance = SqlAlchemyRepository(session, Product)
-    result = await crud_instance.list()
+    result = await crud_instance.list_resource()
     return result
 
 
@@ -25,22 +25,29 @@ async def get_product(product_id: int, session: AsyncSession = Depends(get_sessi
 
 
 @product_router.post("/", response_model=Product, status_code=http_status.HTTP_202_ACCEPTED)
-async def post_product(product: ProductBase, session: AsyncSession = Depends(get_session)):
+async def post_product(product_body: ProductBase, session: AsyncSession = Depends(get_session)):
     crud_instance = SqlAlchemyRepository(session, Product)
-    result: Product = await crud_instance.add(product)
+    result: Product = await crud_instance.add(product_body)
 
     return result
 
 
 @product_router.put("/{product_id}", response_model=Product, status_code=http_status.HTTP_202_ACCEPTED)
-async def put_product(product_id: int, product: ProductBase, session: AsyncSession = Depends(get_session)):
+async def put_product(product_id: int, product_body: ProductBase, session: AsyncSession = Depends(get_session)):
     crud_instance = SqlAlchemyRepository(session, Product)
-    result: Product = await crud_instance.update(product_id, product)
+    result: Product = await crud_instance.update(product_id, product_body)
     return result
 
 
 @product_router.patch("/{product_id}", response_model=Product, status_code=http_status.HTTP_202_ACCEPTED)
-async def patch_product(product_id: int, product: ProductBase, session: AsyncSession = Depends(get_session)):
+async def patch_product(product_id: int, product_body: ProductBase, session: AsyncSession = Depends(get_session)):
     crud_instance = SqlAlchemyRepository(session, Product)
-    result: Product = await crud_instance.update(product_id, product)
+    result: Product = await crud_instance.update(product_id, product_body)
     return result
+
+
+@product_router.delete("/{product_id}", status_code=http_status.HTTP_202_ACCEPTED)
+async def delete_product(product_id: int, session: AsyncSession = Depends(get_session)):
+    crud_instance = SqlAlchemyRepository(session, Product)
+    result: Product = await crud_instance.delete(product_id)
+    return {}

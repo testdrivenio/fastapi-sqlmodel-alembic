@@ -1,6 +1,6 @@
 from app.utils import AbstractRepository
 from fastapi import HTTPException
-from sqlalchemy import update, select
+from sqlalchemy import select, delete
 
 from app.products.models import Product
 from sqlmodel import SQLModel
@@ -25,7 +25,7 @@ class SqlAlchemyRepository(AbstractRepository):
 
         return retrieved_resource
 
-    async def update(self, resource_id: int, new_resource_content: SQLModel):
+    async def modify(self, resource_id: int, new_resource_content: SQLModel):
 
         product = await self.get(resource_id)
         values = new_resource_content.dict(exclude_unset=True)
@@ -39,6 +39,13 @@ class SqlAlchemyRepository(AbstractRepository):
 
         return product
 
-    async def list(self):
+    async def delete(self, resource_id: int):
+
+        product = await self.get(resource_id)
+
+        await self.session.execute(delete(product))
+        await self.session.commit()
+
+    async def list_resource(self):
         result = await self.session.execute(select(self.model))
         return result.scalars().all()
