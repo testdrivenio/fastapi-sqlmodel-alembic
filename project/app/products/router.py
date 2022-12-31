@@ -2,10 +2,10 @@ from fastapi import Depends, FastAPI, Body
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import status as http_status
-from app.db import get_session
-from app.products.models import Product, ProductBase, ProductCreate
+from db import get_session
+from products.models import Product, ProductBase, ProductCreate
 from fastapi import APIRouter
-from app.products.service import SqlAlchemyRepository
+from products.service import SqlAlchemyRepository
 
 product_router = APIRouter()
 
@@ -14,6 +14,7 @@ product_router = APIRouter()
 async def list_products(session: AsyncSession = Depends(get_session)):
     crud_instance = SqlAlchemyRepository(session, Product)
     result = await crud_instance.list_resource()
+    print("Dracukeo")
     return result
 
 
@@ -49,5 +50,6 @@ async def patch_product(product_id: int, product_body: ProductBase, session: Asy
 @product_router.delete("/{product_id}", status_code=http_status.HTTP_202_ACCEPTED)
 async def delete_product(product_id: int, session: AsyncSession = Depends(get_session)):
     crud_instance = SqlAlchemyRepository(session, Product)
-    result: Product = await crud_instance.delete(product_id)
-    return {}
+
+    await crud_instance.delete(product_id)
+    return None

@@ -1,8 +1,8 @@
-from app.utils import AbstractRepository
+from utils import AbstractRepository
 from fastapi import HTTPException
 from sqlalchemy import select, delete
 
-from app.products.models import Product
+from products.models import Product
 from sqlmodel import SQLModel
 
 
@@ -41,10 +41,14 @@ class SqlAlchemyRepository(AbstractRepository):
 
     async def delete(self, resource_id: int):
 
-        product = await self.get(resource_id)
 
-        await self.session.execute(delete(product))
-        await self.session.commit()
+        retrieved_resource = await self.session.get(self.model, resource_id)
+        if retrieved_resource:
+            await self.session.delete(retrieved_resource)
+            await self.session.commit()
+
+        return None
+
 
     async def list_resource(self):
         result = await self.session.execute(select(self.model))
