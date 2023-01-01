@@ -1,4 +1,4 @@
-from utils import AbstractRepository
+from utils.base_class import AbstractRepository
 from fastapi import HTTPException
 from sqlalchemy import select, delete
 

@@ -11,13 +11,5 @@ logger = logging.getLogger(__name__)
 
 config_path = Path(__file__).with_name("logging_config.json")
 
-
-def create_app() -> FastAPI:
-    new_app = FastAPI(title='Products API', debug=False)
-    new_app.logger = CustomizeLogger.make_logger(config_path)
-
-    return new_app
-
-
-app = create_app()
+app = FastAPI(title='Products API', debug=False)
 app.include_router(product_router, prefix="/product")
