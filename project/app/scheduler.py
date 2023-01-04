@@ -1,13 +1,12 @@
+import logging
+
 from rocketry import Rocketry
 
 app = Rocketry(execution="async")
 
-
-# Create some tasks
-
-@app.task('every 30 seconds')
+@app.task('every 1 minutes')
 async def do_things():
-    print("INFOOOOO")
+    logging.info("SEXOOOOOOOO")
 
 
 if __name__ == "__main__":

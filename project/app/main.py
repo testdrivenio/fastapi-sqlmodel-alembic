@@ -1,8 +1,16 @@
 import asyncio
+import logging
+import pathlib
+from pathlib import Path
+from fastapi.logger import logger as fast_logger
 import uvicorn
 import sys
 from scheduler import app as app_rocketry
 from api import app as app_fastapi
+
+logger = logging.getLogger(__name__)
+
+config_path = Path(__file__).with_name("logging_config.json")
 
 
 class Server(uvicorn.Server):
@@ -18,17 +26,15 @@ class Server(uvicorn.Server):
 
 async def main():
     """Run Rocketry and FastAPI"""
-
-    log_config = uvicorn.config.LOGGING_CONFIG
-    log_config["formatters"]["access"]["fmt"] = "[%(levelname)s %(asctime)s]  -  %(message)s"
-
-    sys.stdout = open('info.logs', 'w')
-    sys.stderr = sys.stdout
+    cwd = pathlib.Path(__file__).parent.resolve()
     server = Server(config=uvicorn.Config(app_fastapi,
                                           workers=1,
                                           loop="asyncio",
                                           port=8000,
-                                          host='0.0.0.0'))
+                                          host='0.0.0.0',
+                                          log_config=f"{cwd}/config_log.ini",
+                                          reload=True
+                                          ))
 
     api = asyncio.create_task(server.serve())
     scheduler = asyncio.create_task(app_rocketry.serve())
@@ -36,11 +42,8 @@ async def main():
     await asyncio.wait([scheduler, api])
 
 
-
 # in any file that import fn setup_logger from the above 'logger_config.py', you can set up local logger like:
 
 if __name__ == "__main__":
-
-
     # Run both applications
     asyncio.run(main())

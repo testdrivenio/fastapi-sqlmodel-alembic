@@ -7,6 +7,8 @@ WORKDIR /usr/src/app
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV PYTHONPATH=/usr/src/app/app
+
 
 # install system dependencies
 RUN apt-get update \

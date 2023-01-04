@@ -1,21 +1,31 @@
-# FastAPI + SQLModel + Alembic
+# Product API for Tekton
 
-Sample FastAPI project that uses async SQLAlchemy, SQLModel, Postgres, Alembic, and Docker.
+This is REST API
+- SQLAlchemy
+- SQLModel
+- Postgres
+- Alembic
+- Docker
+- Rocketry
 
-## Want to learn how to build this?
 
-Check out the [post](https://testdriven.io/blog/fastapi-sqlmodel/).
+## How to setup the project?
 
-## Want to use this project?
+You have to have Docker installed in your computer. Then, run the following commands to create the
+respective container that includes a fastapi and a postgres container.
 
 ```sh
 $ docker-compose up -d --build
+```
+
+To run the migrations of the database models defined in the project you must the following command
+to reflect this change to the Postgres database
+```sh
+$ docker-compose exec web alembic revision --autogenerate -m "new migration"
 $ docker-compose exec web alembic upgrade head
 ```
 
-Sanity check: [http://localhost:8004/ping](http://localhost:8004/ping)
-
-Add a song:
+If any wen well you should see the following page after 
 
 ```sh
 $ curl -d '{"name":"Midnight Fit", "artist":"Mogwai", "year":"2021"}' -H "Content-Type: application/json" -X POST http://localhost:8004/songs

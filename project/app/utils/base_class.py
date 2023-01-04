@@ -1,12 +1,12 @@
 import abc
-
-from sqlmodel import SQLModel
+from typing import List
 
 status_name_cache = {}
 
 class AbstractRepository(abc.ABC):
+
     @abc.abstractmethod
-    def add(self, batch: dict):
+    def add(self, batch: dict) -> dict:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -14,11 +14,13 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def delete(self, reference: int) -> dict:
+    def delete(self, reference: int) -> None:
         raise NotImplementedError
 
-    """
-        @abc.abstractmethod  # (1)
-        def modify(self, batch: dict) -> dict:
-            raise NotImplementedError  # (2)
-    """
+    @abc.abstractmethod  # (1)
+    def modify(self, reference: int, batch: dict) -> None:
+        raise NotImplementedError  # (2)
+
+    @abc.abstractmethod  # (1)
+    def list_resource(self) -> List[dict]:
+        raise NotImplementedError  # (2)

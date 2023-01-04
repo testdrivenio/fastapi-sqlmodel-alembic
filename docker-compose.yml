@@ -1,21 +1,24 @@
 version: '3.8'
 
 services:
-
   web:
     build: ./project
-    command: python app/main.py  #uvicorn app.main --reload --workers 1 --host 0.0.0.0 --port 8000
+    command: python app/main.py #uvicorn main:app_fastapi --app-dir=app --workers 1 --host 0.0.0.0 --port 8000 --log-config ./app/config_log.ini
     volumes:
       - ./project:/usr/src/app
+
     ports:
       - 8004:8000
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/foo
     depends_on:
       - db
-
   db:
     image: postgres:13.4
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data
+      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - ./sql/mock_products.csv:/docker-entrypoint-initdb.d/mock_products.csv
     ports:
       - "6543:5432"
     restart: always
@@ -28,3 +31,5 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=foo
+volumes:
+  dev-db-data:

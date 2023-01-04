@@ -1,48 +1,53 @@
+
+from sqlalchemy.exc import IntegrityError
+
 from utils.base_class import AbstractRepository
 from fastapi import HTTPException
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, update
 
 from products.models import Product
 from sqlmodel import SQLModel
 
 
-class SqlAlchemyRepository(AbstractRepository):
-    def __init__(self, session, model):
+class ProductORM(AbstractRepository):
+    def __init__(self, session):
         self.session = session
-        self.model = model
 
-    async def add(self, resource: SQLModel):
-        new_resource = self.model(**resource.dict())
-        self.session.add(new_resource)
-        await self.session.commit()
-        await self.session.refresh(new_resource)
-        return new_resource
+
+    async def add(self, resource: dict) -> dict:
+
+        new_resource = Product(**resource)
+        try:
+            self.session.add(new_resource)
+            await self.session.commit()
+            await self.session.refresh(new_resource)
+        except IntegrityError:
+            raise HTTPException(status_code=303, detail="Product name is already taken")
+
+        return new_resource.dict()
 
     async def get(self, resource_id: int):
-        retrieved_resource = await self.session.get(self.model, resource_id)
+        retrieved_resource = await self.session.get(Product, resource_id)
         if not retrieved_resource:
             raise HTTPException(status_code=404, detail="Product not found")
 
         return retrieved_resource
 
-    async def modify(self, resource_id: int, new_resource_content: SQLModel):
+    async def modify(self, resource_id: int, new_resource_content: dict):
 
-        product = await self.get(resource_id)
-        values = new_resource_content.dict(exclude_unset=True)
+        await self.get(resource_id)
 
-        for k, v in values.items():
-            setattr(product, k, v)
+        stmt = update(Product) \
+            .where(Product.product_id == resource_id) \
+            .values(new_resource_content)
 
-        self.session.add(product)
+        await self.session.execute(stmt)
         await self.session.commit()
-        await self.session.refresh(product)
-
-        return product
+        return None
 
     async def delete(self, resource_id: int):
 
-
-        retrieved_resource = await self.session.get(self.model, resource_id)
+        retrieved_resource = await self.session.get(Product, resource_id)
         if retrieved_resource:
             await self.session.delete(retrieved_resource)
             await self.session.commit()
@@ -51,5 +56,5 @@ class SqlAlchemyRepository(AbstractRepository):
 
 
     async def list_resource(self):
-        result = await self.session.execute(select(self.model))
+        result = await self.session.execute(select(Product))
         return result.scalars().all()
