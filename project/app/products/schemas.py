@@ -1,10 +1,9 @@
 from decimal import Decimal
-from functools import reduce
 
 import requests
 from pydantic import BaseModel, Field, PositiveInt, condecimal, conint, validator
 
-from typing import Union, List, Callable, Optional
+from typing import Union, Optional
 from scheduler import product_status_cache
 
 
