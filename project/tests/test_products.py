@@ -13,12 +13,16 @@ def test_retrieve_products(test_app, session):
 
     response = test_app.get(url="/products")
 
-    result = session.execute(select(Product))
+    result = [_.dict() for _ in session.execute(select(Product)).scalars().all()]
 
     assert response.status_code == 200
-    for response_row, result_row in zip(response.json(), result.scalars().all()):
-        result_row.price = float(result_row.price)
-        assert response_row == result_row
+
+    response_dict = response.json()
+
+    for resu, respo in zip(result, response_dict):
+
+        for key in ["name", "stock", "description", "price"]:
+            assert resu.get(key, '') == respo.get(key, '')
 
 
 def test_create_product(test_app, session):
@@ -39,8 +43,11 @@ def test_create_product(test_app, session):
     assert response.status_code == 202
     result = temp.dict()
     result = {**result, "price": float(result.get("price"))}
+    response_dict = response.json()
+    for key in ["name", "status_name", "stock", "description", "price"]:
+        assert result.get(key, '') == response_dict.get(key, '')
 
-    assert response.json() == result
+
 
     session.delete(temp)
     session.commit()

@@ -10,6 +10,8 @@ from functools import partial
 from typing import List
 
 product_router = APIRouter()
+# this partial function applies a dependency injection of the Product ORM
+# to create an instance of the class with their corresponding sqlachemy async session
 product_crud = partial(get_sqlalchemy_crud, ProductORM)
 
 
@@ -34,7 +36,7 @@ async def get_product(
 
 
 @product_router.post(
-    "/", response_model=Product, status_code=http_status.HTTP_202_ACCEPTED
+    "/", response_model=ProductSerializer, status_code=http_status.HTTP_202_ACCEPTED
 )
 async def post_product(
     product_body: CreateProduct, crud_instance: ProductORM = Depends(product_crud)
@@ -49,7 +51,7 @@ async def put_product(
     product_body: ModifyProduct,
     crud_instance: ProductORM = Depends(product_crud),
 ):
-    await crud_instance.modify(product_id, product_body.dict())
+    await crud_instance.modify(product_id, product_body.dict(exclude_none=True))
     return {}
 
 
@@ -59,7 +61,7 @@ async def patch_product(
     product_body: ProductBase,
     crud_instance: ProductORM = Depends(product_crud),
 ):
-    await crud_instance.modify(product_id, product_body.dict())
+    await crud_instance.modify(product_id, product_body.dict(exclude_none=True))
     return {}
 
 

@@ -1,16 +1,8 @@
 import asyncio
-import logging
 import pathlib
-from pathlib import Path
-from fastapi.logger import logger as fast_logger
 import uvicorn
-import sys
 from scheduler import app as app_rocketry
 from api import app as app_fastapi
-
-logger = logging.getLogger(__name__)
-
-config_path = Path(__file__).with_name("logging_config.json")
 
 
 class Server(uvicorn.Server):

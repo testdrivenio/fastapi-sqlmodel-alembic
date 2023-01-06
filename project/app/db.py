@@ -18,9 +18,7 @@ async def get_sqlalchemy_crud(
     """
     Creates a version asynchronous session of sqlalchemy
     """
-    async_session = sessionmaker(engine,
-                                 class_=AsyncSession,
-                                 expire_on_commit=False)
+    async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
     async with async_session() as session:
         temp = crud_class(session)
         yield temp
