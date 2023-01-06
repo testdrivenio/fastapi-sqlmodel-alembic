@@ -5,9 +5,11 @@ This is REST API
 - SQLModel
 - Postgres
 - Alembic
-- Docker 
+- Docker Compose
 - Rocketry
-
+- Pydantic
+- Fastapi
+- Asyncpg
 
 ## How to setup the project?
 
@@ -49,15 +51,15 @@ The project has the following structure
 │   │   ├── main.py
 │   │   ├── products
 │   │   │   ├── __init__.py
-│   │   │   ├── models.py 
+│   │   │   ├── models.py # database models definition
 │   │   │   ├── router.py # controller
 │   │   │   ├── schemas.py # validation schemas
 │   │   │   └── service.py # business logic
-│   │   ├── scheduler.py
+│   │   ├── scheduler.py # rocketry task initializer 
 │   │   └── utils
 │   │       ├── __init__.py
 │   │       ├── base_class.py
-│   │       └── config_log.ini #
+│   │       └── config_log.ini # uvicorn config file
 │   ├── logfile.log
 │   ├── migrations # Alembic migrations
 │   │   ├── README
