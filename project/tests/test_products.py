@@ -8,7 +8,6 @@ logging.basicConfig(level=logging.INFO)
 mylogger = logging.getLogger(__name__)
 
 
-
 def test_retrieve_products(test_app, session):
     """Test retrieve all products"""
 
@@ -25,18 +24,21 @@ def test_retrieve_products(test_app, session):
 def test_create_product(test_app, session):
     """Test create new product"""
 
-    response = test_app.post(url="/products", json={
-        "status": True,
-        "stock": 88,
-        "price": 6.42,
-        "name": "LopaLOpa",
-        "description": "deliver magnetic portals"
-    })
-    product_id = response.json().get('product_id')
+    response = test_app.post(
+        url="/products",
+        json={
+            "status": True,
+            "stock": 88,
+            "price": 6.42,
+            "name": "LopaLOpa",
+            "description": "deliver magnetic portals",
+        },
+    )
+    product_id = response.json().get("product_id")
     temp = session.get(Product, product_id)
     assert response.status_code == 202
     result = temp.dict()
-    result = {**result, 'price': float(result.get('price'))}
+    result = {**result, "price": float(result.get("price"))}
 
     assert response.json() == result
 
@@ -47,25 +49,31 @@ def test_create_product(test_app, session):
 def test_modify_product(test_app, session):
     """Test modify product"""
 
-    _ = test_app.post(url="/products", json={
-        "status": True,
-        "stock": 88,
-        "price": 6.42,
-        "name": "Dog dima don",
-        "description": "deliver magnetic portals"
-    })
-    product_id = _.json().get('product_id')
+    _ = test_app.post(
+        url="/products",
+        json={
+            "status": True,
+            "stock": 88,
+            "price": 6.42,
+            "name": "Dog dima don",
+            "description": "deliver magnetic portals",
+        },
+    )
+    product_id = _.json().get("product_id")
 
-    response_patch = test_app.patch(url=f"/products/{product_id}", json={
-        "status": False,
-        "name": "DracuKeooOzzz",
-    })
+    response_patch = test_app.patch(
+        url=f"/products/{product_id}",
+        json={
+            "status": False,
+            "name": "DracuKeooOzzz",
+        },
+    )
     temp = {
         "status": False,
         "stock": 88,
         "price": 6.42,
         "name": "DracuKeooOzzz",
-        "description": "deliver magnetic portals"
+        "description": "deliver magnetic portals",
     }
     assert response_patch.status_code == 202
     assert response_patch.json() == temp
@@ -77,14 +85,17 @@ def test_modify_product(test_app, session):
 def test_delete_product(test_app, session):
     """Test delete product"""
 
-    _ = test_app.post(url="/products", json={
-        "status": True,
-        "stock": 88,
-        "price": 6.42,
-        "name": "Dog dima don",
-        "description": "deliver magnetic portals"
-    })
-    product_id = _.json().get('product_id')
+    _ = test_app.post(
+        url="/products",
+        json={
+            "status": True,
+            "stock": 88,
+            "price": 6.42,
+            "name": "Dog dima don",
+            "description": "deliver magnetic portals",
+        },
+    )
+    product_id = _.json().get("product_id")
 
     response_delete = test_app.delete(url=f"/products/{product_id}")
 
@@ -97,21 +108,27 @@ def test_delete_product(test_app, session):
 def test_create_duplicate_products(test_app, session):
     """Test product name uniqueness"""
 
-    _ = test_app.post(url="/products", json={
-        "status": True,
-        "stock": 88,
-        "price": 6.42,
-        "name": "Dog dima don",
-        "description": "deliver magnetic portals"
-    })
-    product_id = _.json().get('product_id')
-    response = test_app.post(url="/products", json={
-        "status": True,
-        "stock": 88,
-        "price": 6.42,
-        "name": "Dog dima don",
-        "description": "deliver magnetic portals"
-    })
+    _ = test_app.post(
+        url="/products",
+        json={
+            "status": True,
+            "stock": 88,
+            "price": 6.42,
+            "name": "Dog dima don",
+            "description": "deliver magnetic portals",
+        },
+    )
+    product_id = _.json().get("product_id")
+    response = test_app.post(
+        url="/products",
+        json={
+            "status": True,
+            "stock": 88,
+            "price": 6.42,
+            "name": "Dog dima don",
+            "description": "deliver magnetic portals",
+        },
+    )
 
     assert response.status_code == 409
     temp = session.get(Product, product_id)
@@ -123,48 +140,35 @@ def test_create_duplicate_products(test_app, session):
     "body_request,error_message",
     [
         (
-                {
-                    "status": True,
-                    "stock": 88,
-                    "price": -12,
-                    "name": "Dog dima don",
-                    "description": "deliver magnetic portals"
-                },
-                {
-                    "loc": [
-                        "body",
-                        "price"
-                    ],
-                    "msg": "ensure this value is greater than or equal to 0.0",
-                    "type": "value_error.number.not_ge",
-                    "ctx": {
-                        "limit_value": 0
-                    }
-                }
-
+            {
+                "status": True,
+                "stock": 88,
+                "price": -12,
+                "name": "Dog dima don",
+                "description": "deliver magnetic portals",
+            },
+            {
+                "loc": ["body", "price"],
+                "msg": "ensure this value is greater than or equal to 0.0",
+                "type": "value_error.number.not_ge",
+                "ctx": {"limit_value": 0},
+            },
         ),
         (
-                {
-
-                    "status": True,
-                    "stock": -88,
-                    "price": 12,
-                    "name": "Dog dima don",
-                    "description": "deliver magnetic portals"
-                },
-                {
-                    "loc": [
-                        "body",
-                        "stock"
-                    ],
-                    "msg": "ensure this value is greater than or equal to 0",
-                    "type": "value_error.number.not_ge",
-                    "ctx": {
-                        "limit_value": 0
-                    }
-                }
-
-        )
+            {
+                "status": True,
+                "stock": -88,
+                "price": 12,
+                "name": "Dog dima don",
+                "description": "deliver magnetic portals",
+            },
+            {
+                "loc": ["body", "stock"],
+                "msg": "ensure this value is greater than or equal to 0",
+                "type": "value_error.number.not_ge",
+                "ctx": {"limit_value": 0},
+            },
+        ),
     ],
 )
 def test_product_validation(test_app, session, body_request, error_message):

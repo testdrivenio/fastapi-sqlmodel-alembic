@@ -1,4 +1,3 @@
-
 from sqlalchemy.exc import IntegrityError
 
 from utils.base_class import AbstractRepository
@@ -12,7 +11,6 @@ class ProductORM(AbstractRepository):
     def __init__(self, session):
         self.session = session
 
-
     async def add(self, resource: dict) -> dict:
 
         new_resource = Product(**resource)
@@ -22,7 +20,6 @@ class ProductORM(AbstractRepository):
             await self.session.refresh(new_resource)
         except IntegrityError:
             raise HTTPException(status_code=409, detail="Product name is already taken")
-
 
         return new_resource.dict()
 
@@ -37,9 +34,11 @@ class ProductORM(AbstractRepository):
 
         await self.get(resource_id)
 
-        stmt = update(Product) \
-            .where(Product.product_id == resource_id) \
+        stmt = (
+            update(Product)
+            .where(Product.product_id == resource_id)
             .values(new_resource_content)
+        )
 
         await self.session.execute(stmt)
         await self.session.commit()
@@ -55,7 +54,6 @@ class ProductORM(AbstractRepository):
         await self.session.commit()
 
         return None
-
 
     async def list_resource(self):
         result = await self.session.execute(select(Product).limit(10))

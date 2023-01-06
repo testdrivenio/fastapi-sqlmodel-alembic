@@ -27,14 +27,17 @@ class Server(uvicorn.Server):
 async def main():
     """Run Rocketry and FastAPI"""
     cwd = pathlib.Path(__file__).parent.resolve()
-    server = Server(config=uvicorn.Config(app_fastapi,
-                                          workers=1,
-                                          loop="asyncio",
-                                          port=8000,
-                                          host='0.0.0.0',
-                                          log_config=f"{cwd}/utils/config_log.ini",
-                                          reload=True
-                                          ))
+    server = Server(
+        config=uvicorn.Config(
+            app_fastapi,
+            workers=1,
+            loop="asyncio",
+            port=8000,
+            host="0.0.0.0",
+            log_config=f"{cwd}/utils/config_log.ini",
+            reload=True,
+        )
+    )
 
     api = asyncio.create_task(server.serve())
     scheduler = asyncio.create_task(app_rocketry.serve())

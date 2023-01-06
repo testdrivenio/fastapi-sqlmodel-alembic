@@ -8,7 +8,8 @@ mylogger = logging.getLogger(__name__)
 app = Rocketry(execution="async")
 product_status_cache = {}
 
-@app.task('every 5 minutes')
+
+@app.task("every 5 minutes")
 async def do_things():
 
     product_status_cache.clear()

@@ -1,4 +1,3 @@
-
 import pytest
 
 from fastapi.testclient import TestClient
@@ -6,11 +5,11 @@ from sqlmodel import Session, create_engine
 
 from api import app
 
+
 @pytest.fixture(scope="session")
 def test_app():
     with TestClient(app) as ac:
         yield ac
-
 
 
 @pytest.fixture(scope="session")

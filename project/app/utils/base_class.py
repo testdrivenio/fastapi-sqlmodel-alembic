@@ -3,8 +3,8 @@ from typing import List
 
 status_name_cache = {}
 
-class AbstractRepository(abc.ABC):
 
+class AbstractRepository(abc.ABC):
     @abc.abstractmethod
     def add(self, batch: dict) -> dict:
         raise NotImplementedError

@@ -13,41 +13,59 @@ product_router = APIRouter()
 product_crud = partial(get_sqlalchemy_crud, ProductORM)
 
 
-@product_router.get("/", response_model=List[ProductSerializer], status_code=http_status.HTTP_200_OK)
+@product_router.get(
+    "/", response_model=List[ProductSerializer], status_code=http_status.HTTP_200_OK
+)
 async def list_products(crud_instance: ProductORM = Depends(product_crud)):
     result = await crud_instance.list_resource()
     return result
 
 
-@product_router.get("/{product_id}", response_model=ProductSerializer, status_code=http_status.HTTP_200_OK)
-async def get_product(product_id: int,
-                      crud_instance: ProductORM = Depends(product_crud)):
+@product_router.get(
+    "/{product_id}",
+    response_model=ProductSerializer,
+    status_code=http_status.HTTP_200_OK,
+)
+async def get_product(
+    product_id: int, crud_instance: ProductORM = Depends(product_crud)
+):
     retrieved_resource = await crud_instance.get(product_id)
     return retrieved_resource
 
 
-@product_router.post("/", response_model=Product, status_code=http_status.HTTP_202_ACCEPTED)
-async def post_product(product_body: CreateProduct,
-                       crud_instance: ProductORM = Depends(product_crud)):
+@product_router.post(
+    "/", response_model=Product, status_code=http_status.HTTP_202_ACCEPTED
+)
+async def post_product(
+    product_body: CreateProduct, crud_instance: ProductORM = Depends(product_crud)
+):
     result = await crud_instance.add(product_body.dict())
     return result
 
 
 @product_router.put("/{product_id}", status_code=http_status.HTTP_202_ACCEPTED)
-async def put_product(product_id: int, product_body: ModifyProduct, crud_instance: ProductORM = Depends(product_crud)):
+async def put_product(
+    product_id: int,
+    product_body: ModifyProduct,
+    crud_instance: ProductORM = Depends(product_crud),
+):
     await crud_instance.modify(product_id, product_body.dict())
     return {}
 
 
 @product_router.patch("/{product_id}", status_code=http_status.HTTP_202_ACCEPTED)
-async def patch_product(product_id: int,
-                        product_body: ProductBase,
-                        crud_instance: ProductORM = Depends(product_crud)):
+async def patch_product(
+    product_id: int,
+    product_body: ProductBase,
+    crud_instance: ProductORM = Depends(product_crud),
+):
     await crud_instance.modify(product_id, product_body.dict())
     return {}
 
 
 @product_router.delete("/{product_id}", status_code=http_status.HTTP_202_ACCEPTED)
-async def delete_product(product_id: int, crud_instance: ProductORM = Depends(product_crud)):
+async def delete_product(
+    product_id: int, crud_instance: ProductORM = Depends(product_crud)
+):
     await crud_instance.delete(product_id)
     return {}
