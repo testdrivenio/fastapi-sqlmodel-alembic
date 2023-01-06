@@ -4,7 +4,6 @@ fastapi[all]
 sqlmodel
 uvicorn
 pytest
-httpx
 rocketry
+psycopg2-binary
 requests
-pytest-asyncio

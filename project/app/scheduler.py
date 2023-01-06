@@ -2,11 +2,17 @@ import logging
 
 from rocketry import Rocketry
 
-app = Rocketry(execution="async")
+logging.basicConfig(level=logging.INFO)
+mylogger = logging.getLogger(__name__)
 
-@app.task('every 1 minutes')
+app = Rocketry(execution="async")
+product_status_cache = {}
+
+@app.task('every 5 minutes')
 async def do_things():
-    logging.info("SEXOOOOOOOO")
+
+    product_status_cache.clear()
+    mylogger.info("Product status cache cleared")
 
 
 if __name__ == "__main__":

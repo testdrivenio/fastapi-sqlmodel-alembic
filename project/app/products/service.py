@@ -6,7 +6,6 @@ from fastapi import HTTPException
 from sqlalchemy import select, delete, update
 
 from products.models import Product
-from sqlmodel import SQLModel
 
 
 class ProductORM(AbstractRepository):
@@ -22,7 +21,8 @@ class ProductORM(AbstractRepository):
             await self.session.commit()
             await self.session.refresh(new_resource)
         except IntegrityError:
-            raise HTTPException(status_code=303, detail="Product name is already taken")
+            raise HTTPException(status_code=409, detail="Product name is already taken")
+
 
         return new_resource.dict()
 
@@ -48,13 +48,15 @@ class ProductORM(AbstractRepository):
     async def delete(self, resource_id: int):
 
         retrieved_resource = await self.session.get(Product, resource_id)
-        if retrieved_resource:
-            await self.session.delete(retrieved_resource)
-            await self.session.commit()
+        if not retrieved_resource:
+            raise HTTPException(status_code=404, detail="Product not found")
+
+        await self.session.delete(retrieved_resource)
+        await self.session.commit()
 
         return None
 
 
     async def list_resource(self):
-        result = await self.session.execute(select(Product))
+        result = await self.session.execute(select(Product).limit(10))
         return result.scalars().all()

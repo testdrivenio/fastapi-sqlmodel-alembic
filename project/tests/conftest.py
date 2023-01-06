@@ -1,36 +1,21 @@
-import asyncio
-import os
-from typing import Type
 
 import pytest
-import pytest_asyncio
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from starlette.testclient import TestClient
+
+from fastapi.testclient import TestClient
+from sqlmodel import Session, create_engine
 
 from api import app
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def test_app():
-    client = TestClient(app)
-    yield client
+    with TestClient(app) as ac:
+        yield ac
 
-@pytest.fixture(scope="session")
-def engine():
-    engine = create_async_engine(
-        os.environ.get("DATABASE_URL")
-    )
-    yield engine
-    engine.sync_engine.dispose()
 
 
 @pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.get_event_loop()
-    yield loop
-    loop.close()
+def session():
 
-@pytest_asyncio.fixture(scope="session")
-async def session(engine):
-    async with AsyncSession(engine) as async_session:
-        yield async_session
-
+    engine = create_engine("postgresql+psycopg2://postgres:postgres@db:5432/dev")
+    with Session(engine) as session:
+        yield session

@@ -1,8 +1,12 @@
 from decimal import Decimal
+from functools import reduce
 
-from pydantic import BaseModel, ValidationError, validator, Field, PositiveInt, condecimal, conint
-from fastapi import Body, FastAPI
-from typing import Union
+import requests
+from pydantic import BaseModel, Field, PositiveInt, condecimal, conint, validator
+
+from typing import Union, List, Callable, Optional
+from scheduler import product_status_cache
+
 
 
 class ProductSerializer(BaseModel):
@@ -11,32 +15,39 @@ class ProductSerializer(BaseModel):
         some transformations in their attributes
     """
     name: str
-    status_name: str
-    stock: PositiveInt = Field(default=0)
+    status_name: Optional[str]
+    stock: PositiveInt
     description: str
-    price: condecimal(ge=Decimal('0.0'), max_digits=10, decimal_places=2) = Field(default=0)
-    discount: int
-    final_price: condecimal(ge=Decimal('0.0'), max_digits=10, decimal_places=2) = Field(default=0)
+    price: condecimal(ge=Decimal('0.0'), max_digits=10, decimal_places=2)
+    discount: Optional[int]
+    final_price: Optional[condecimal(ge=Decimal('0.0'), max_digits=10, decimal_places=2)]
+    product_id: int
 
-    @validator('status_name')
-    def name_must_contain_space(cls, v):
-        if ' ' not in v:
-            raise ValueError('must contain a space')
-        return v.title()
+    @validator('discount', always=True)
+    def discount_fetch(cls, value, values):
+        response = requests.get(url="https://www.randomnumberapi.com/api/v1.0/random?min=1&max=100")
+        assert response.status_code == 200, "Discount service is not working"
+        discount_response = response.json().pop()
 
-    @validator('discount')
-    def passwords_match(cls, v, values, **kwargs):
-        if 'password1' in values and v != values['password1']:
-            raise ValueError('passwords do not match')
-        # https://www.randomnumberapi.com/api/v1.0/random?min=100&max=1000
-        return v
+        values['discount'] = discount_response
 
-    @validator('final_price')
-    def username_alphanumeric(cls, v):
-        assert v.isalnum(), 'must be alphanumeric'
-        return v
+        return discount_response
 
+    @validator('final_price', always=True)
+    def asd(cls, value, values):
 
+        discount = Decimal((100 - values.get('discount')) / 100)
+        temp = discount * values.get('price')
+        return round(temp, 2)
+
+    @validator('status_name', always=True)
+    def status_name_cached(cls, value, values):
+        product_id = values.get('product_id')
+        if not (status := product_status_cache.get(product_id)):
+            product_status_cache[product_id] = values.get('status')
+            status = values.get('status')
+
+        return "Active" if status else "Inactive"
 class ModifyProduct(BaseModel):
     name: str
     status: Union[bool, None] = Field(default=True)

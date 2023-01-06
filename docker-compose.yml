@@ -6,11 +6,11 @@ services:
     command: python app/main.py #uvicorn main:app_fastapi --app-dir=app --workers 1 --host 0.0.0.0 --port 8000 --log-config ./app/config_log.ini
     volumes:
       - ./project:/usr/src/app
-
     ports:
-      - 8004:8000
+      - "8004:8000"
     environment:
-      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/foo
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/dev
+      - TEST_DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/test
     depends_on:
       - db
   db:
@@ -19,6 +19,7 @@ services:
       - dev-db-data:/var/lib/postgresql/data
       - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
       - ./sql/mock_products.csv:/docker-entrypoint-initdb.d/mock_products.csv
+      - ./sql/multiple_db.sh:/docker-entrypoint-initdb.d/multiple_db.sh
     ports:
       - "6543:5432"
     restart: always
@@ -30,6 +31,6 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=foo
+      - POSTGRES_MULTIPLE_DATABASES=dev,test
 volumes:
   dev-db-data:
