@@ -32,7 +32,7 @@ async def main():
                                           loop="asyncio",
                                           port=8000,
                                           host='0.0.0.0',
-                                          log_config=f"{cwd}/config_log.ini",
+                                          log_config=f"{cwd}/utils/config_log.ini",
                                           reload=True
                                           ))
 

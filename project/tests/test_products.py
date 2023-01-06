@@ -29,7 +29,7 @@ def test_create_product(test_app, session):
         "status": True,
         "stock": 88,
         "price": 6.42,
-        "name": "Dog dima don",
+        "name": "LopaLOpa",
         "description": "deliver magnetic portals"
     })
     product_id = response.json().get('product_id')
@@ -90,7 +90,7 @@ def test_delete_product(test_app, session):
 
     assert response_delete.status_code == 202
 
-    response_get = test_app.delete(url=f"/products/{product_id}")
+    response_get = test_app.get(url=f"/products/{product_id}")
     assert response_get.status_code == 404
 
 
@@ -113,7 +113,7 @@ def test_create_duplicate_products(test_app, session):
         "description": "deliver magnetic portals"
     })
 
-    assert response.status_code == 303
+    assert response.status_code == 409
     temp = session.get(Product, product_id)
     session.delete(temp)
     session.commit()

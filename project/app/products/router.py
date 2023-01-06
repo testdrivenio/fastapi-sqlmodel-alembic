@@ -13,13 +13,13 @@ product_router = APIRouter()
 product_crud = partial(get_sqlalchemy_crud, ProductORM)
 
 
-@product_router.get("/",response_model=List[ProductSerializer], status_code=http_status.HTTP_200_OK)
+@product_router.get("/", response_model=List[ProductSerializer], status_code=http_status.HTTP_200_OK)
 async def list_products(crud_instance: ProductORM = Depends(product_crud)):
     result = await crud_instance.list_resource()
     return result
 
 
-@product_router.get("/{product_id}", response_model=Product, status_code=http_status.HTTP_200_OK)
+@product_router.get("/{product_id}", response_model=ProductSerializer, status_code=http_status.HTTP_200_OK)
 async def get_product(product_id: int,
                       crud_instance: ProductORM = Depends(product_crud)):
     retrieved_resource = await crud_instance.get(product_id)
