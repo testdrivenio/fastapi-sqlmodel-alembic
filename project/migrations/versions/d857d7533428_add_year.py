@@ -1,18 +1,18 @@
 """add year
 
-Revision ID: 53754b2c08a4
-Revises: f9c634db477d
-Create Date: 2021-09-10 00:52:38.668620
+Revision ID: d857d7533428
+Revises: ac891bc75d61
+Create Date: 2023-07-01 02:41:05.275414
 
 """
 from alembic import op
 import sqlalchemy as sa
-import sqlmodel
+import sqlmodel             # NEW
 
 
 # revision identifiers, used by Alembic.
-revision = '53754b2c08a4'
-down_revision = 'f9c634db477d'
+revision = 'd857d7533428'
+down_revision = 'ac891bc75d61'
 branch_labels = None
 depends_on = None
 
