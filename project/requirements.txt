@@ -1,2 +1,5 @@
-fastapi==0.99.0
+alembic==1.11.1
+asyncpg==0.28.0
+fastapi==0.100.0
+sqlmodel==0.0.8
 uvicorn==0.22.0
